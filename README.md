@@ -1,2 +1,2 @@
-# Single-Shot-Detection-SSD---Object-Detection
-Object Detection using SSD
+
+# Object Detection using SSD (Single Shot Detection)
