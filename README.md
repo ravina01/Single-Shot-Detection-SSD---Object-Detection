@@ -4,6 +4,7 @@
 - SSD is a single-stage detector, meaning it performs object detection in a single forward pass through the network. It directly predicts the bounding boxes and class scores from the feature maps without needing a separate region proposal step.
 - Two-Stage Detector: Faster R-CNN is a two-stage detector. The first stage is the Region Proposal Network (RPN) that generates region proposals (candidate bounding boxes that might contain objects). The second stage classifies these proposals and refines their bounding boxes.
 - SSD uses a set of predefined anchor boxes (default boxes) with different aspect ratios and scales at multiple locations in the feature maps. The model predicts the offsets and class probabilities for these boxes directly.
+- SSD Beats YOLO and Faster RCNN
   
 ### Topics -
 1. How SSD is Different
