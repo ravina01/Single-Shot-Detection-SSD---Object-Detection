@@ -79,6 +79,23 @@ The process is repeated for each of the other feature layers, with different num
 **5. Anchor Boxes:**
 SSD uses a fixed set of default anchor boxes at each location in the feature maps. These boxes vary in scale and aspect ratio, allowing the model to detect objects of various shapes and sizes. For instance, Conv4_3 may use 4 anchor boxes, while Conv8_2 may use 6, as indicated by 4x(Classes+4) and 6x(Classes+4).
 
+**5.1 Variety of Aspect Ratios and Scales:**
+- Anchor Boxes (Default Boxes): Anchor boxes are predefined bounding boxes with various aspect ratios and scales that serve as references for the model to predict object locations and sizes. The idea is that the model does not need to predict bounding boxes from scratch but rather adjusts these anchor boxes to fit the objects in the image.
+
+- Aspect Ratios: The anchor boxes are designed with different aspect ratios (e.g., 1:1, 2:1, 1:2) and scales to cover a wide range of possible object shapes. This is important because objects in real-world images can have widely varying sizes and proportions.
+
+**5.2 Number of Anchor Boxes:**
+- 4 Anchor Boxes at Conv4_3:
+In the Conv4_3 layer, 4 anchor boxes per spatial location are used. This layer has a relatively large feature map (38x38), which is better suited for detecting smaller objects. By using 4 anchor boxes, the model can cover different aspect ratios and scales while keeping the number manageable to avoid overburdening the computation and memory requirements.
+
+- 6 Anchor Boxes at Deeper Layers (e.g., Conv7):
+As you move deeper into the network, the feature maps become smaller (e.g., 19x19 at Conv7). These smaller feature maps are more suitable for detecting larger objects. In these layers, 6 anchor boxes per spatial location are used. This increased number of anchor boxes allows the model to accommodate a wider variety of larger objects and different aspect ratios at these scales.
+
+**5.3 Coverage of Object Sizes:**
+Smaller Objects: The layers with more feature map locations (like Conv4_3 with 38x38) are tasked with detecting smaller objects. Fewer anchor boxes (e.g., 4) are sufficient here because the higher resolution of the feature map already provides fine-grained spatial coverage.
+Larger Objects: For layers with fewer feature map locations (like Conv7 with 19x19), more anchor boxes (e.g., 6) are used to ensure that the model can still detect larger objects, even though the spatial resolution is lower.
+
+
 **6. Non-Maximum Suppression (NMS):**
 After the model generates a large number of bounding box predictions, Non-Maximum Suppression is applied to filter out redundant boxes. This step retains the boxes with the highest confidence scores for each detected object, ensuring that only one bounding box per object remains.
 
