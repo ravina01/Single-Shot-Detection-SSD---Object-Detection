@@ -1,10 +1,14 @@
 
 # Object Detection using SSD (Single Shot Detection)
 ---
+- SSD is a single-stage detector, meaning it performs object detection in a single forward pass through the network. It directly predicts the bounding boxes and class scores from the feature maps without needing a separate region proposal step.
+- Two-Stage Detector: Faster R-CNN is a two-stage detector. The first stage is the Region Proposal Network (RPN) that generates region proposals (candidate bounding boxes that might contain objects). The second stage classifies these proposals and refines their bounding boxes.
+- SSD uses a set of predefined anchor boxes (default boxes) with different aspect ratios and scales at multiple locations in the feature maps. The model predicts the offsets and class probabilities for these boxes directly.
+  
 ### Topics -
 1. How SSD is Different
 2. Multi-box Concept
-3. Predicting Object positions
+3. Predicting Object positions - Predicting Offsets
 4. Scale Problem
 
 #### 1. How SSD is Different
@@ -17,6 +21,36 @@ Introduction -
 - The SSD (Single Shot MultiBox Detector) is a popular architecture for object detection that combines speed and accuracy.
 - It is designed to detect objects in images in a single pass, making it faster compared to two-stage detectors like Faster R-CNN.
 
+
+#### 3. Predicting Object positions - Predicting Offsets
+![image](https://github.com/user-attachments/assets/65fe18a0-5364-4710-9b55-90c5be91ec89)
+
+-These anchor boxes serve as references for detecting objects. The idea is that the model does not predict bounding boxes from scratch; instead, it predicts adjustments (offsets) to these anchor boxes to fit the objects in the image better.
+- During training, each ground truth object is matched to the anchor box that has the highest Intersection over Union (IoU) with it. The model learns to predict the correct offsets that minimize the difference between the predicted bounding box (after applying the offsets) and the ground truth bounding box.
+- At each location on the feature map, the model applies a small convolutional filter (often 3x3 in size) to predict the offsets for the anchor boxes associated with that location.
+The output of this convolutional filter is a set of values corresponding to the offsets for each anchor box. If there are 𝑘 anchor boxes per location, the filter predicts 4×k values: Δx, Δy, Δw, and Δh for each of the 
+k anchor boxes.
+- The model uses backpropagation to adjust the weights of the convolutional layers that predict the offsets. The gradients of the localization loss with respect to the predicted offsets are calculated, and these gradients are used to update the weights.
+- Over time, through many iterations of training, the model learns to make more accurate predictions of the offsets, enabling it to better fit the anchor boxes to the objects in the image.
+
+#### 4. Scale Problem
+![image](https://github.com/user-attachments/assets/ae7fa36a-8479-46f3-bbf2-470962f43f86)
+
+- horse in front is not detected.
+- will resize the image keeping the anchor box size as same and then perform CNN on top of it to classify the object.
+- will need multiple resized boxes for this. 
+- CNN is used to reduce the image size.
+---
+
+![image](https://github.com/user-attachments/assets/29909d1d-a80e-4f05-af0a-b58c2ff04dcd)
+
+Lets break down the architecture -
+
+- 
+
+
+
+---
  #### Below is an overview of the SSD architecture:
 
 1. Base Network (Feature Extractor):
