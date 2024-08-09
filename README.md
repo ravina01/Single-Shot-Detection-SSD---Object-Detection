@@ -40,15 +40,55 @@ k anchor boxes.
 - will resize the image keeping the anchor box size as same and then perform CNN on top of it to classify the object.
 - will need multiple resized boxes for this. 
 - CNN is used to reduce the image size.
+- Multiscale Feature Maps: SSD makes use of feature maps from multiple layers of the base network to detect objects at different scales. Shallower layers detect smaller objects, while deeper layers detect larger objects.
+
+  
 ---
 
 ![image](https://github.com/user-attachments/assets/29909d1d-a80e-4f05-af0a-b58c2ff04dcd)
 
 Lets break down the architecture -
 
-- 
+**2. Input size:**
+- The input to the SSD model is a 300x300 image with 3 channels (typically RGB).
+
+**2. Base Network (VGG-16):**
+- VGG-16 Backbone: The first part of the SSD architecture is a truncated VGG-16 network. The diagram shows that the SSD uses VGG-16 up to the Conv5_3 layer.
+- Conv4_3: The output of the Conv4_3 layer is used for object detection. This feature map has a size of 38x38 with 512 channels. This large feature map is useful for detecting smaller objects in the image.
+- Conv5_3: The final layer from the VGG-16 backbone used is Conv5_3, which has a size of 19x19 with 512 channels.
+
+**3. Extra Feature Layers:**
+- The extra feature layers are additional convolutional layers added to the architecture after the VGG-16 backbone. These layers allow the model to detect objects at multiple scales and handle different aspect ratios.
+- These layers progressively reduce the size of the feature maps:
+- Conv6 (FC6): 19x19x1024
+- Conv7 (FC7): 19x19x1024
+- Conv8_2: 10x10x512
+- Conv9_2: 5x5x256
+- Conv10_2: 3x3x256
+- Conv11_2: 1x1x256
+- Each of these feature layers has specific kernel sizes, stride, and padding to control the dimensions of the output feature maps.
+- Smaller the dim, larger the object is detected.
+
+**4. Multiscale Predictions:**
+- Detection Predictions: At each feature layer, small convolutional filters (typically 3x3) are applied to predict object classes and bounding box offsets.
+  
+- Each layer contributes to predictions at different scales:
+- Conv4_3: Predicts using a 3x3 filter with a 4x(Classes+4) output. The Classes+4 term accounts for the number of object classes (e.g., 20 for VOC) and 4 for the bounding box coordinates.
+The process is repeated for each of the other feature layers, with different numbers of default boxes (anchor boxes) per location.
+
+**5. Anchor Boxes:**
+SSD uses a fixed set of default anchor boxes at each location in the feature maps. These boxes vary in scale and aspect ratio, allowing the model to detect objects of various shapes and sizes. For instance, Conv4_3 may use 4 anchor boxes, while Conv8_2 may use 6, as indicated by 4x(Classes+4) and 6x(Classes+4).
+
+**6. Non-Maximum Suppression (NMS):**
+After the model generates a large number of bounding box predictions, Non-Maximum Suppression is applied to filter out redundant boxes. This step retains the boxes with the highest confidence scores for each detected object, ensuring that only one bounding box per object remains.
 
 
+**7. Final Detections:**
+The SSD model outputs a total of 8732 detections per class. These are filtered using the confidence scores, and the remaining high-confidence detections are passed to the Non-Maximum Suppression step.
+The final detections per image after NMS represent the objects detected in the image along with their bounding boxes and class labels.
+
+**8. Performance Metrics:**
+The diagram indicates the performance of the SSD model: it achieves 74.3 mAP (mean Average Precision) and can process images at 59 FPS (Frames Per Second), highlighting its efficiency and effectiveness for real-time object detection tasks.
 
 ---
  #### Below is an overview of the SSD architecture:
